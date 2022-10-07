@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/web/main-layout :: main-fragment(
+                                                ~{::title},
+                                                ~{:: #index-static-resources},
+                                                ~{:: #index-header-main-nav},
+                                                ~{:: #index-main-content},
+                                                ~{:: #index-js-resources}
+                                               )}">
+<head>
+    <title>Molla FS- 404 Page</title>
+</head>
+
+<body>
+<div id="index-header-main-nav">
+    <nav class="main-nav">
+        <ul class="menu sf-arrows">
+            <li>
+                <a href="index.html" class="">Home</a>
+            </li>
+            <li>
+                <a href="category-4cols.html" class="">Shop</a>
+            </li>
+            <li>
+                <a href="product.html" class="">Product</a>
+            </li>
+            <li>
+                <a href="#" class="sf-with-ul">Pages</a>
+                <ul>
+                    <li>
+                        <a href="about.html" class="">About</a>
+                    </li>
+                    <li>
+                        <a href="contact.html" class="">Contact</a>
+                    </li>
+                    <li><a href="login.html">Login</a></li>
+                    <li><a href="faq.html">FAQs</a></li>
+                    <li><a href="404.html">Error 404</a></li>
+                    <li><a href="coming-soon.html">Coming Soon</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="blog.html" class="">Blog</a>
+            </li>
+            <li>
+                <a href="admin-dashboard.html" class="">Admin</a>
+            </li>
+        </ul><!-- End .menu -->
+    </nav><!-- End .main-nav -->
+</div>
+<div id="index-main-content">
+    <main class="main">
+        <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
+            <div class="container">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="#">Pages</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">404</li>
+                </ol>
+            </div><!-- End .container -->
+        </nav><!-- End .breadcrumb-nav -->
+
+        <div class="error-content text-center" th:style="'background-image: url('+@{/web/assets/images/backgrounds/error-bg.jpg}+');'">
+            <div class="container">
+                <h1 class="error-title">Error 404</h1><!-- End .error-title -->
+                <p>We are sorry, the page you've requested is not available.</p>
+                <a th:href="@{/}" class="btn btn-outline-primary-2 btn-minwidth-lg">
+                    <span>BACK TO HOMEPAGE</span>
+                    <i class="icon-long-arrow-right"></i>
+                </a>
+            </div><!-- End .container -->
+        </div><!-- End .error-content text-center -->
+    </main><!-- End .main -->
+</div>
+</body>
+
+
+<!-- molla/404.html  22 Nov 2019 10:04:04 GMT -->
+</html>
