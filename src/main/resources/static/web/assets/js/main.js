@@ -839,4 +839,30 @@ $(document).ready(function () {
             }
         });
     }
+
+    //Forgot your password
+    $('#forgotPassword').submit(function (e) {
+        e.preventDefault()
+        let $email = $('#forgotEmail').val();
+        const $labelForgotPassword = $('#label-forgot-password')
+
+        $.post({
+            url: "/api/forgot-password",
+            data: JSON.stringify({email:$email}),
+            dataType: "json",
+            contentType: "application/json",
+            success: function (res) {
+                if(res.status == "SUCCESS"){
+                    $('#form-forgot-password').addClass('d-none')
+                    $('#form-notify-email').removeClass('d-none')
+                    $('#verify-email').html(res.data.email)
+                } else {
+                    $labelForgotPassword.html(res.message)
+                }
+            },
+            error: function (e) {
+                console.log(e)
+            }
+        });
+    });
 });
