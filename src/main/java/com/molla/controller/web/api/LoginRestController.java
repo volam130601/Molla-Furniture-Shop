@@ -75,13 +75,11 @@ public class LoginRestController {
         if(user != null) {
             //Thêm: Cho nó chạy một luồng riêng.
             Map<String, Object> properties = new HashMap<>();
-            properties.put("name", "Ashish");
-            properties.put("subscriptionDate", LocalDate.now().toString());
-            properties.put("technologies", Arrays.asList("Python", "Go", "C#"));
+            properties.put("email", userDto.getEmail());
             EmailDetails emailDetails = EmailDetails.builder()
                     .to(user.getEmail())
-                    .subject("Molla Store - Change your password")
-                    .template("web/email-forgot-password.html")
+                    .subject("Molla Store - Reset your password")
+                    .template("web/email-template.html")
                     .properties(properties)
                     .build();
             emailService.sendHtmlMessage(emailDetails);
@@ -93,4 +91,20 @@ public class LoginRestController {
                 new ResponseBody<>("Cannot found this email address." , ResponseBody.StatusCode.FAIL)
         );
     }
+
+    @PostMapping(value = "/reset-password", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<ResponseBody<User>> handleResetPassword(@RequestBody UserDto userDto) {
+        User user = userService.findByEmail(userDto.getEmail());
+        if(user != null) {
+            user.setPassword(new BCryptPasswordEncoder().encode(userDto.getPassword()));
+            userService.save(user);
+            return ResponseEntity.ok(
+                    new ResponseBody<>("Reset your password is successful.", ResponseBody.StatusCode.SUCCESS)
+            );
+        }
+        return ResponseEntity.ok(
+                new ResponseBody<>("Reset your password is fail.", ResponseBody.StatusCode.FAIL)
+        );
+    }
+
 }

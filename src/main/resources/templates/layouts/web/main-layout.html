@@ -75,13 +75,12 @@
                     </div>
                   </li>
                   <li>
-                      <div sec:authorize="!isAuthenticated()">
-                          <a th:href="@{/login}">Sign in / Sign up</a>
-                      </div>
-                    <div sec:authorize="isAuthenticated()">
+<!--                      <div sec:authorize="!isAuthenticated()">-->
+                          <a th:if="${username == null}" th:href="@{/login}">Sign in / Sign up</a>
+<!--                      </div>-->
+                    <div th:unless="${username == null}">
                       Welcome <b><span th:text="${username}">Username</span></b>
-                      &nbsp;
-                      <a th:href="@{/logout}">Logout</a>
+                      <a th:href="@{/logout}" class="ml-5">Logout</a>
                     </div>
                   </li>
                 </ul>

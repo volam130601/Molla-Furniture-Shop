@@ -10,10 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -69,6 +66,14 @@ public class MainController {
     @GetMapping("/forgot-password")
     public String viewForgotPassword() {
         return "web/forgot-password";
+    }
+
+    @GetMapping("/reset-password")
+    public String viewResetPassword(@RequestParam(value = "em" ,required = false) String email,
+                                    Model model) {
+        System.out.println(email);
+        model.addAttribute("email", email);
+        return "web/reset-password";
     }
 
 }

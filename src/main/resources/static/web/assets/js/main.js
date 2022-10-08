@@ -845,9 +845,9 @@ $(document).ready(function () {
         e.preventDefault()
         let $email = $('#forgotEmail').val();
         const $labelForgotPassword = $('#label-forgot-password')
-
+        let $sendEmail = "";
         $.post({
-            url: "/api/forgot-password",
+            url: "http://localhost:8080/api/find-email",
             data: JSON.stringify({email:$email}),
             dataType: "json",
             contentType: "application/json",
@@ -856,6 +856,7 @@ $(document).ready(function () {
                     $('#form-forgot-password').addClass('d-none')
                     $('#form-notify-email').removeClass('d-none')
                     $('#verify-email').html(res.data.email)
+                    sendEmail(res.data.email)
                 } else {
                     $labelForgotPassword.html(res.message)
                 }
@@ -864,5 +865,78 @@ $(document).ready(function () {
                 console.log(e)
             }
         });
+
+
     });
+    function sendEmail(param) {
+        $.post({
+            url: "/api/forgot-password",
+            data: JSON.stringify({email: param}),
+            dataType: "json",
+            contentType: "application/json",
+            success: function (res) {
+                console.log(res.status)
+            },
+            error: function (e) {
+                console.log(e)
+            }
+        });
+    }
+
+    //Reset Password
+    $('#resetPassword').submit(function (e) {
+        e.preventDefault()
+        const $repassValues = {}
+        const $labelNewPass = $('#label-new-password')
+        const $labelconfirmPass = $('#label-confirm-password')
+        const format = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
+        $.each($('#resetPassword').serializeArray(), function(i, field) {
+            if(field.name == "password") {
+                let $newPassword = field.value
+                if($newPassword.length < 5) $labelNewPass.html('Your new password must be at least 5 characters long.')
+                else if(format.test($newPassword)) {
+                    $labelNewPass.html('Space and Special characters not allowed.')
+                } else {
+                    $repassValues[field.name] = field.value
+                    $labelNewPass.html('')
+                }
+            }
+            if(field.name == "confirmPassword") {
+                const $confirmPassword = field.value
+                if($confirmPassword.length < 5) $labelconfirmPass.html('Your confirm password must be at least 5 characters long.')
+                else if(format.test($confirmPassword)) {
+                    $labelconfirmPass.html('Space and Special characters not allowed.')
+                } else {
+                    $repassValues[field.name] = field.value
+                    $labelconfirmPass.html('')
+                }
+            }
+            if(field.name == "email") {
+                $repassValues[field.name] = field.value
+            }
+        });
+        if($repassValues.password != $repassValues.confirmPassword)
+            $labelNewPass.html('The password confirmation does not match.')
+        else {
+            console.log($repassValues)
+            resetPassword($repassValues)
+        }
+    });
+
+    function resetPassword(data) {
+        $.post({
+            url: "/api/reset-password",
+            data: JSON.stringify(data),
+            dataType: "json",
+            contentType: "application/json",
+            success: function (res) {
+                console.log(res.status)
+                if(res.status == "SUCCESS") window.location.href = "/login"
+                else console.log(res.message)
+            },
+            error: function (e) {
+                console.log(e)
+            }
+        });
+    }
 });
