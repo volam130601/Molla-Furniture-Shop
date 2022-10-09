@@ -8,6 +8,7 @@ import com.molla.entity.User;
 import com.molla.service.EmailService;
 import com.molla.service.RoleService;
 import com.molla.service.UserService;
+import com.molla.util.AesEncryption;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -68,14 +69,15 @@ public class LoginRestController {
                 new ResponseBody<>("Cannot found this email address." , ResponseBody.StatusCode.FAIL)
         );
     }
-
+    @Autowired
+    private AesEncryption aesEncryption;
     @PostMapping(value = "/forgot-password", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<ResponseBody<UserDto>> handleForgotPassword(@RequestBody UserDto userDto) {
         User user = userService.findByEmail(userDto.getEmail());
         if(user != null) {
             //Thêm: Cho nó chạy một luồng riêng.
             Map<String, Object> properties = new HashMap<>();
-            properties.put("email", userDto.getEmail());
+            properties.put("email", aesEncryption.encrypt(userDto.getEmail() , "EMAIL"));
             EmailDetails emailDetails = EmailDetails.builder()
                     .to(user.getEmail())
                     .subject("Molla Store - Reset your password")
@@ -94,7 +96,7 @@ public class LoginRestController {
 
     @PostMapping(value = "/reset-password", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<ResponseBody<User>> handleResetPassword(@RequestBody UserDto userDto) {
-        User user = userService.findByEmail(userDto.getEmail());
+        User user = userService.findByEmail(aesEncryption.decrypt(userDto.getEmail().replace(" " , "+"),"EMAIL"));
         if(user != null) {
             user.setPassword(new BCryptPasswordEncoder().encode(userDto.getPassword()));
             userService.save(user);
