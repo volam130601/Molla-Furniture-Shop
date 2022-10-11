@@ -1,8 +1,12 @@
 package com.molla.controller;
 
+import com.molla.dto.AuthenticationProvider;
 import com.molla.dto.UserDto;
 import com.molla.entity.User;
+import com.molla.oauth.CustomOAuth2User;
+import com.molla.oauth.OAuth2LoginSuccessHandler;
 import com.molla.service.UserService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,15 +24,27 @@ import java.security.Principal;
 public class MainController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
     public void authUsername(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserName = null;
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
-            String currentUserName = authentication.getName();
-            User user = userService.findByEmail(currentUserName);
-            if(user.getFirstName() != null && user.getLastName() != null)
-                model.addAttribute("username" , user.getFirstName() + " " +user.getLastName());
-            else {
-                model.addAttribute("username", "Username");
+            currentUserName = authentication.getName();
+            if(currentUserName.contains("@")) {
+                User user = userService.findByEmail(currentUserName);
+                if (user != null) {
+                    model.addAttribute("username", user.getFirstName() + " " + user.getLastName());
+                }
+            } else {
+                CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
+                User user = userService.findByEmail(oAuth2User.getEmail());
+                if(user == null)
+                    userService.processOAuthPostLogin(oAuth2User.getEmail(), oAuth2User.getName(),
+                            AuthenticationProvider.FACEBOOK);
+                else userService.updateExistUserAfterLoginSuccess(user, oAuth2User.getFullName(),
+                        AuthenticationProvider.FACEBOOK);
+                model.addAttribute("username", oAuth2User.getName());
             }
         }
     }
@@ -60,6 +76,8 @@ public class MainController {
     @GetMapping("/admin")
     public String viewAdminPage(Model model) {
         authUsername(model);
+        model.addAttribute("username", "username");
+
         return "web/admin";
     }
 
@@ -71,7 +89,6 @@ public class MainController {
     @GetMapping("/reset-password")
     public String viewResetPassword(@RequestParam(value = "em" ,required = false) String email,
                                     Model model) {
-        System.out.println(email);
         model.addAttribute("email", email);
         return "web/reset-password";
     }

@@ -1,5 +1,6 @@
 package com.molla.service;
 
+import com.molla.dto.AuthenticationProvider;
 import com.molla.entity.User;
 
 public interface UserService {
@@ -8,4 +9,8 @@ public interface UserService {
     User findByEmail(String email);
 
     void deleteById(Long userId);
+
+    void processOAuthPostLogin(String email , String fullName, AuthenticationProvider provider);
+
+    void updateExistUserAfterLoginSuccess(User user, String fullName, AuthenticationProvider provider);
 }

@@ -1,0 +1,35 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  datasource:
+    username: root
+    password: 870124zxc
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/molla_store_db
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  main:
+    allow-circular-references: true
+  thymeleaf:
+    cache: false
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: lamlbx123@gmail.com
+    password: goohorbujqyyvaok
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  security:
+    oauth2:
+      client:
+        registration:
+          facebook:
+            client-id: 868925621157539
+            client-secret: 7a44bd5e945df946ffc5d640b25b16fc
+            scope:
+              - email
+              - public_profile

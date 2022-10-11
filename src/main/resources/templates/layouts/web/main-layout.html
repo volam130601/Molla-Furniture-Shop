@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
       th:fragment="main-fragment (title, otherStaticResources, headerMainNav, mainContent, otherJSSources)">
 <head>
   <meta charset="UTF-8">
@@ -75,12 +75,12 @@
                     </div>
                   </li>
                   <li>
-<!--                      <div sec:authorize="!isAuthenticated()">-->
-                          <a th:if="${username == null}" th:href="@{/login}">Sign in / Sign up</a>
-<!--                      </div>-->
-                    <div th:unless="${username == null}">
-                      Welcome <b><span th:text="${username}">Username</span></b>
+                    <div th:if="${username != null}">
+                      Welcome <b th:text="${#request.userPrincipal.name}"></b>
                       <a th:href="@{/logout}" class="ml-5">Logout</a>
+                    </div>
+                    <div  th:unless="${username != null}">
+                      <a th:href="@{/login}">Sign in / Sign up</a>
                     </div>
                   </li>
                 </ul>

@@ -1,5 +1,6 @@
 package com.molla.entity;
 
+import com.molla.dto.AuthenticationProvider;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -27,7 +28,13 @@ public class User {
 
     private String firstName;
     private String lastName;
+    private String fullName;
     private String phone;
+
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "auth_provider",length = 15)
+    private AuthenticationProvider authProvider;
 
     @CreatedDate
     private Date registeredAt;

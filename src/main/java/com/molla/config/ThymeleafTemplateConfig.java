@@ -8,6 +8,7 @@ import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 import java.nio.charset.StandardCharsets;
 
+//Config template for Email
 @Configuration
 public class ThymeleafTemplateConfig {
     @Bean
