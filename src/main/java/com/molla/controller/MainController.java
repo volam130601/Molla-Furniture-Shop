@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
+import java.util.Arrays;
+import java.util.List;
 
 @Controller
 public class MainController {
@@ -38,12 +40,13 @@ public class MainController {
                 }
             } else {
                 CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
-                User user = userService.findByEmail(oAuth2User.getEmail());
-                if(user == null)
-                    userService.processOAuthPostLogin(oAuth2User.getEmail(), oAuth2User.getName(),
-                            AuthenticationProvider.FACEBOOK);
-                else userService.updateExistUserAfterLoginSuccess(user, oAuth2User.getFullName(),
-                        AuthenticationProvider.FACEBOOK);
+                //Save or update for email Facebook and google, but If the same email address LOCAL the wrong.
+//                User user = userService.findByEmail(oAuth2User.getEmail());
+//                if(user == null)
+//                    userService.processOAuthPostLogin(oAuth2User.getEmail(), oAuth2User.getName(),
+//                            AuthenticationProvider.FACEBOOK);
+//                else userService.updateExistUserAfterLoginSuccess(user, oAuth2User.getFullName(),
+//                        AuthenticationProvider.FACEBOOK);
                 model.addAttribute("username", oAuth2User.getName());
             }
         }
