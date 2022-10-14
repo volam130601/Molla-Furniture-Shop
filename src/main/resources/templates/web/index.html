@@ -46,7 +46,7 @@
                 <a href="blog.html" class="">Blog</a>
             </li>
             <li>
-                <a th:href="@{/admin}" class="">Admin</a>
+                <a th:if="${role == 'ROLE_ADMIN'}" th:href="@{/admin}" class="">Admin</a>
             </li>
         </ul><!-- End .menu -->
     </nav><!-- End .main-nav -->
@@ -60,7 +60,6 @@
                     <div class="container intro-content">
                         <h3 class="intro-subtitle">Bedroom Furniture</h3><!-- End .h3 intro-subtitle -->
                         <h1 class="intro-title">Find Comfort <br>That Suits You.</h1><!-- End .intro-title -->
-
                         <a href="category.html" class="btn btn-primary">
                             <span>Shop Now</span>
                             <i class="icon-long-arrow-right"></i>

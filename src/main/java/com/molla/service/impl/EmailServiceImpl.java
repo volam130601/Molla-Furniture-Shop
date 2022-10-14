@@ -1,6 +1,7 @@
 package com.molla.service.impl;
 
 import com.molla.dto.EmailDetails;
+import com.molla.dto.StatusCode;
 import com.molla.service.EmailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,8 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -86,7 +89,8 @@ public class EmailServiceImpl implements EmailService {
         }
     }
     @Override
-    public String sendHtmlMessage(EmailDetails emailDetails) {
+    public Map<String, String> sendHtmlMessage(EmailDetails emailDetails) {
+        Map<String, String> report = new HashMap<>();
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
@@ -99,10 +103,15 @@ public class EmailServiceImpl implements EmailService {
             helper.setText(html, true);
 
 //            log.info("Sending email: {} with html body: {}", emailDetails, html);
+            System.out.println("Email is sending....");
             javaMailSender.send(message);
-            return "Mail sent Successfully";
+            report.put("message" , "Mail sent Successfully");
+            report.put("status" , String.valueOf(StatusCode.SUCCESS));
+            return report;
         } catch (MessagingException e) {
-            return "Error while sending mail!!!";
+            report.put("message" , "Error while sending mail!!!");
+            report.put("status" , String.valueOf(StatusCode.FAIL));
+            return report;
         }
 
     }

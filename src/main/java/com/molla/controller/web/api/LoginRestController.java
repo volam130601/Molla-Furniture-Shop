@@ -1,8 +1,7 @@
 package com.molla.controller.web.api;
 
-import com.molla.dto.EmailDetails;
+import com.molla.dto.*;
 import com.molla.dto.ResponseBody;
-import com.molla.dto.UserDto;
 import com.molla.entity.Role;
 import com.molla.entity.User;
 import com.molla.service.EmailService;
@@ -33,9 +32,9 @@ public class LoginRestController {
 
     @PostMapping(value = "/registration", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<ResponseBody<User>> registration(@RequestBody UserDto userDto) {
-        if(userService.findByEmail(userDto.getEmail()) != null) {
+        if(userService.findByEmailAndAuthProvider(userDto.getEmail(),AuthenticationProvider.LOCAL) != null) {
             return ResponseEntity.ok().body(
-                    new ResponseBody<>("Email is already exists!", ResponseBody.StatusCode.BAD_REQUEST)
+                    new ResponseBody<>("Email is already exists!", StatusCode.BAD_REQUEST)
             );
         } else {
             List<Role> roles = new ArrayList<>();
@@ -44,15 +43,17 @@ public class LoginRestController {
                     .email(userDto.getEmail())
                     .password(new BCryptPasswordEncoder().encode(userDto.getPassword()))
                     .roles(roles)
+                    .enabled(true)
+                    .authProvider(AuthenticationProvider.LOCAL)
                     .build();
             user = userService.save(user);
             if(user != null) {
                 return ResponseEntity.ok(
-                        new ResponseBody<>(user,"Registration is successful.", ResponseBody.StatusCode.SUCCESS)
+                        new ResponseBody<>(user,"Registration is successful.", StatusCode.SUCCESS)
                 );
             }
             return ResponseEntity.badRequest().body(
-                    new ResponseBody<>("Registration is failed.",ResponseBody.StatusCode.FAIL)
+                    new ResponseBody<>("Registration is failed.",StatusCode.FAIL)
             );
         }
     }
@@ -60,22 +61,22 @@ public class LoginRestController {
     //Forgot Password
     @PostMapping(value = "/find-email", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<ResponseBody<UserDto>> findEmail(@RequestBody UserDto userDto) {
-        if(userService.findByEmail(userDto.getEmail()) != null) {
+        if(userService.findByEmailAndAuthProvider(userDto.getEmail(), AuthenticationProvider.LOCAL) != null) {
             return ResponseEntity.ok(
-                    new ResponseBody<>(userDto , "Email is exist.", ResponseBody.StatusCode.SUCCESS)
+                    new ResponseBody<>(userDto , "Email is exist.", StatusCode.SUCCESS)
             );
         }
         return ResponseEntity.ok(
-                new ResponseBody<>("Cannot found this email address." , ResponseBody.StatusCode.FAIL)
+                new ResponseBody<>("Cannot found this email address." , StatusCode.FAIL)
         );
     }
     @Autowired
-    private AesEncryption aesEncryption;
+    private AesEncryption aesEncryption; //Encrypt and Decrypt for String.
     @PostMapping(value = "/forgot-password", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<ResponseBody<UserDto>> handleForgotPassword(@RequestBody UserDto userDto) {
         User user = userService.findByEmail(userDto.getEmail());
         if(user != null) {
-            //Thêm: Cho nó chạy một luồng riêng.
+            //Cho nó chạy một luồng riêng với AJAX.
             Map<String, Object> properties = new HashMap<>();
             properties.put("email", aesEncryption.encrypt(userDto.getEmail() , "EMAIL"));
             EmailDetails emailDetails = EmailDetails.builder()
@@ -84,28 +85,33 @@ public class LoginRestController {
                     .template("web/email-template.html")
                     .properties(properties)
                     .build();
-            emailService.sendHtmlMessage(emailDetails);
-            return ResponseEntity.ok(
-                    new ResponseBody<>(userDto , "Email is exist.", ResponseBody.StatusCode.SUCCESS)
-            );
+            Map<String,String> messages = emailService.sendHtmlMessage(emailDetails);
+            if(messages.get("status").equals(String.valueOf(StatusCode.SUCCESS)))
+                return ResponseEntity.ok(
+                        new ResponseBody<>(userDto , messages.get("message"), StatusCode.SUCCESS)
+                );
+            else
+                return ResponseEntity.ok(
+                        new ResponseBody<>(userDto , messages.get("message"), StatusCode.FAIL)
+                );
         }
         return ResponseEntity.ok(
-                new ResponseBody<>("Cannot found this email address." , ResponseBody.StatusCode.FAIL)
+                new ResponseBody<>("Cannot found this email address." , StatusCode.FAIL)
         );
     }
 
     @PostMapping(value = "/reset-password", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<ResponseBody<User>> handleResetPassword(@RequestBody UserDto userDto) {
-        User user = userService.findByEmail(aesEncryption.decrypt(userDto.getEmail().replace(" " , "+"),"EMAIL"));
+        User user = userService.findByEmailAndAuthProvider(aesEncryption.decrypt(userDto.getEmail().replace(" " , "+"),"EMAIL") , AuthenticationProvider.LOCAL);
         if(user != null) {
             user.setPassword(new BCryptPasswordEncoder().encode(userDto.getPassword()));
             userService.save(user);
             return ResponseEntity.ok(
-                    new ResponseBody<>("Reset your password is successful.", ResponseBody.StatusCode.SUCCESS)
+                    new ResponseBody<>("Reset your password is successful.", StatusCode.SUCCESS)
             );
         }
         return ResponseEntity.ok(
-                new ResponseBody<>("Reset your password is fail.", ResponseBody.StatusCode.FAIL)
+                new ResponseBody<>("Reset your password is fail.", StatusCode.FAIL)
         );
     }
 

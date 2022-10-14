@@ -10,9 +10,6 @@ public class ResponseBody<T> {
     private String message;
 
     private StatusCode status;
-    public enum StatusCode {
-        FAIL, SUCCESS, BAD_REQUEST, ERROR;
-    }
     public ResponseBody(String message) {
         this.message = message;
     }

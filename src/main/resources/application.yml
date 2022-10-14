@@ -1,7 +1,7 @@
 spring:
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: true
   datasource:
     username: root
@@ -9,10 +9,10 @@ spring:
     url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/molla_store_db
     driver-class-name: com.mysql.cj.jdbc.Driver
   main:
-    allow-circular-references: true
+    allow-circular-references: true #Fix bug circular JPA
   thymeleaf:
-    cache: false
-  mail:
+    cache: false #Delete cache khong can thiet
+  mail: #Connect Email
     host: smtp.gmail.com
     port: 587
     username: lamlbx123@gmail.com

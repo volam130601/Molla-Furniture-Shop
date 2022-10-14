@@ -55,7 +55,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/","/web/**","/api/**", "/oauth2/**").permitAll()
+                .antMatchers("/", "/web/**","/api/**", "/oauth2/**").permitAll()
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .and()
                 .formLogin()
@@ -74,7 +74,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //                    .and()
                     //Không dùng được vì thằng security thymeleaf bị lỗi
 //                    .successHandler(oAuth2LoginSuccessHandler);
-        //Config OAuth 2
         http.exceptionHandling().accessDeniedPage("/404");
 
         // Cấu hình Remember Me

@@ -1,5 +1,6 @@
 package com.molla.config;
 
+import com.molla.dto.AuthenticationProvider;
 import com.molla.entity.Role;
 import com.molla.entity.User;
 import com.molla.service.RoleService;
@@ -37,6 +38,9 @@ public class DataSeedingListener implements ApplicationListener<ContextRefreshed
             roles.add(roleService.findByName("ROLE_ADMIN"));
             roles.add(roleService.findByName("ROLE_MEMBER"));
             admin.setRoles(roles);
+            admin.setAuthProvider(AuthenticationProvider.LOCAL);
+            admin.setEnabled(true);
+            admin.setFullName("ADMIN");
             userService.save(admin);
         }
         // Member account
@@ -47,6 +51,9 @@ public class DataSeedingListener implements ApplicationListener<ContextRefreshed
             List<Role> roles = new ArrayList<>();
             roles.add(roleService.findByName("ROLE_MEMBER"));
             user.setRoles(roles);
+            user.setAuthProvider(AuthenticationProvider.LOCAL);
+            user.setEnabled(true);
+            user.setFullName("MEMBER");
             userService.save(user);
         }
     }

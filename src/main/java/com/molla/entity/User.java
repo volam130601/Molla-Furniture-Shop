@@ -13,13 +13,16 @@ import java.util.List;
 //Allow Class DataSeedingListener can be run.
 @EntityListeners(AuditingEntityListener.class)
 @Data @AllArgsConstructor @NoArgsConstructor @Builder
-@Table(name = "users")
+@Table(name = "users",
+        uniqueConstraints = {@UniqueConstraint(name = "Unique_Email_AuthProvider",
+        columnNames = {"email", "auth_provider"})}
+)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String email;
     @Column(nullable = false)
     private String password;
@@ -31,7 +34,7 @@ public class User {
     private String lastName;
     private String fullName;
 
-    @Column(unique = true)
+//    @Column(unique = true)
     private String phone;
 
 

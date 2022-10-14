@@ -1,6 +1,5 @@
 package com.molla.oauth;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
@@ -9,9 +8,11 @@ import java.util.Map;
 
 public class CustomOAuth2User implements OAuth2User {
     private OAuth2User oAuth2User;
+    private String clientName;
 
-    public CustomOAuth2User(OAuth2User oAuth2User) {
+    public CustomOAuth2User(OAuth2User oAuth2User, String clientName) {
         this.oAuth2User = oAuth2User;
+        this.clientName = clientName;
     }
 
     @Override
@@ -39,5 +40,9 @@ public class CustomOAuth2User implements OAuth2User {
 
     public String getPassword() {
         return oAuth2User.getAttribute("password");
+    }
+
+    public String getClientName() {
+        return clientName;
     }
 }
