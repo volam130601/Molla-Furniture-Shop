@@ -23,12 +23,15 @@ public class User {
     private String email;
     @Column(nullable = false)
     private String password;
-    private String username;
+    //Function login with username;
+//    private String username;
     private boolean enabled;
 
     private String firstName;
     private String lastName;
     private String fullName;
+
+    @Column(unique = true)
     private String phone;
 
 
@@ -42,10 +45,7 @@ public class User {
     @Temporal(TemporalType.DATE)
     private Date lastLogin;
 
-    @ManyToMany(cascade = {
-            CascadeType.MERGE,
-            CascadeType.PERSIST
-    })
+    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @JoinTable(
@@ -53,4 +53,24 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<Role> roles;
+
+    @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private List<Product> products;
+
+    @OneToMany(mappedBy = "user")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private List<Cart> carts;
+
+    @OneToMany(mappedBy = "user")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private List<Order> orders;
+
+    @OneToMany(mappedBy = "user")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private List<Transaction> transactions;
 }
